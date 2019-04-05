@@ -11,7 +11,7 @@
                 Calories: <strong>{{ $recipe->calories }} kcal</strong>
             </p>
             <p>
-                {{ nl2br($recipe->description) }}
+                {!! nl2br($recipe->description) !!}
             </p>
         </div>
 
