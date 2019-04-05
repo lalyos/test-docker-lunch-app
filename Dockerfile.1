@@ -1,0 +1,12 @@
+FROM lalyos/laravel
+USER root
+RUN rm -rf /var/sharedwww/initialised /var/www/initialised
+RUN mkdir -p /var/sharedwww/
+RUN chown www:www /var/www
+RUN chown www:www /var/sharedwww
+USER www
+RUN composer install
+COPY start.sh /
+
+CMD ["/start.sh"]
+

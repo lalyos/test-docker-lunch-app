@@ -1,0 +1,57 @@
+version: "3.1"
+services:
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    secrets:
+    - dbpassword
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/dbpassword
+      MYSQL_DATABASE: dockertest
+    volumes:
+      - dbdata:/var/lib/mysql
+
+  webserver:
+    image: nginx:alpine
+    container_name: webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - www:/var/sharedwww
+      #- ./:/var/www
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+
+  php:
+    image: lalyos/laravel:v1
+    secrets:
+    - secret-env
+    volumes:
+    - www:/var/sharedwww
+    #- .:/var/www
+    - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    command: /start.sh
+
+  redis:
+    image: redis
+
+#  adminer:
+#    image: adminer
+#    restart: always
+#    ports:
+#      - 8080:8080
+
+secrets:
+  dbpassword:
+    external: true
+  secret-env:
+    external: true
+
+volumes:
+  dbdata:
+    driver: local
+  www:
+    driver: local
